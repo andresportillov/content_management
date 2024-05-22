@@ -1,7 +1,7 @@
 const Category = require('../models/Category');
 
 // Crear una nueva categoría
-exports.createCategory = async (req, res) => {
+const createCategory = async (req, res) => {
   const { name, description, coverImage, allowedContentTypes } = req.body;
 
   try {
@@ -21,7 +21,7 @@ exports.createCategory = async (req, res) => {
 };
 
 // Obtener todas las categorías
-exports.getCategories = async (req, res) => {
+const getCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     res.json(categories);
@@ -32,7 +32,7 @@ exports.getCategories = async (req, res) => {
 };
 
 // Actualizar una categoría
-exports.updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   const { name, description, coverImage, allowedContentTypes } = req.body;
 
   try {
@@ -56,7 +56,7 @@ exports.updateCategory = async (req, res) => {
 };
 
 // Eliminar una categoría
-exports.deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
     let category = await Category.findById(req.params.id);
 
@@ -71,3 +71,10 @@ exports.deleteCategory = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+module.exports = {
+  createCategory,
+  getCategories,
+  updateCategory,
+  deleteCategory
+}
