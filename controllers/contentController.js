@@ -1,7 +1,7 @@
 const Content = require('../models/Content');
 
 // Crear un nuevo contenido
-exports.createContent = async (req, res) => {
+const createContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
 
   try {
@@ -24,7 +24,7 @@ exports.createContent = async (req, res) => {
 };
 
 // Obtener todos los contenidos
-exports.getContents = async (req, res) => {
+const getContents = async (req, res) => {
   try {
     const contents = await Content.find().populate('category').populate('topic').populate('createdBy', 'username');
     res.json(contents);
@@ -35,7 +35,7 @@ exports.getContents = async (req, res) => {
 };
 
 // Actualizar un contenido
-exports.updateContent = async (req, res) => {
+const updateContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
 
   try {
@@ -61,7 +61,7 @@ exports.updateContent = async (req, res) => {
 };
 
 // Eliminar un contenido
-exports.deleteContent = async (req, res) => {
+const deleteContent = async (req, res) => {
   try {
     let content = await Content.findById(req.params.id);
 
@@ -76,3 +76,10 @@ exports.deleteContent = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+module.exports = {
+  createContent,
+  getContents,
+  updateContent,
+  deleteContent
+}
