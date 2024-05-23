@@ -5,7 +5,6 @@ const User = require('../models/User')
 const createContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
   const user = await User.findOne({_id: req.user.id})
-  console.log(user);
   try {
     let content = new Content({
       title,
