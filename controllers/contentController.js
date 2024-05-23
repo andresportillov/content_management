@@ -1,9 +1,10 @@
 const Content = require('../models/Content');
+const User = require('../models/User')
 
 // Crear un nuevo contenido
 const createContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
-
+  const user = await User.findOne({_id: req.user.id})
   try {
     let content = new Content({
       title,
@@ -12,7 +13,7 @@ const createContent = async (req, res) => {
       text,
       category,
       topic,
-      createdBy: req.user.id,
+      createdBy: user.username
     });
 
     await content.save();
@@ -26,7 +27,16 @@ const createContent = async (req, res) => {
 // Obtener todos los contenidos
 const getContents = async (req, res) => {
   try {
-    const contents = await Content.find().populate('category').populate('topic').populate('createdBy', 'username');
+    const { search = '' } = req.query
+    const query = {}
+    
+    if (Boolean(search) && search.trim() !== '') {
+      query.$or = [
+        {title: {$regex: search, $options: 'i'}},
+        {topic: {$regex: search, $options: 'i'}}
+      ]
+    }
+    const contents = await Content.find(query)
     res.json(contents);
   } catch (error) {
     console.error(error.message);

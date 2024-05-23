@@ -13,6 +13,10 @@ const register = async (req, res) => {
       return res.status(400).json({ msg: 'El correo ya está registrado' });
     }
 
+    if (Boolean(role) && role.trim() === "") {
+      return res.status(400).json({ msg: 'No se puede crear cuentas admin desde este medio.' });
+    }
+
     user = new User({
       username,
       email,
