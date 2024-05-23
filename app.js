@@ -2,8 +2,12 @@ const express = require('express');
 const connectDB = require('./config/db');
 const bodyParser = require('body-parser');
 require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
+
+// Habilitar CORS para todas las rutas
+app.use(cors());
 
 // Conectar a la base de datos
 connectDB();

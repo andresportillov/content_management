@@ -7,9 +7,12 @@ const contentSchema = new mongoose.Schema({
   type: { type: String, enum: ['image', 'video', 'text'], required: true },
   url: { type: String },  // URL for videos or images
   text: { type: String },  // Text content
-  category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-  topic: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic', required: true },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  category: { type: String, enum: ['Informacion', 'Entretenimiento', 'Motivacional'], required: true },
+  topic: { type: String, enum: ['ciencia', 'matematicas', 'deporte'], ref: 'Topic', required: true },
+  createdBy: { type: String, required: true },
+  createdAt: {type: String, default: Date.now()}
+}, {
+  versionKey: null,
 });
 
 module.exports = mongoose.model('Content', contentSchema);

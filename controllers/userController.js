@@ -13,6 +13,10 @@ const register = async (req, res) => {
       return res.status(400).json({ msg: 'El correo ya está registrado' });
     }
 
+    if (Boolean(role) && role.trim() === "") {
+      return res.status(400).json({ msg: 'No se puede crear cuentas admin desde este medio.' });
+    }
+
     user = new User({
       username,
       email,
@@ -50,6 +54,8 @@ const register = async (req, res) => {
 // Autenticación de usuarios
 const login = async (req, res) => {
   const { email, password } = req.body;
+
+  console.log(req.body);
 
   try {
     let user = await User.findOne({ email });
