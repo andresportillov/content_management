@@ -27,7 +27,19 @@ const createContent = async (req, res) => {
 // Obtener todos los contenidos
 const getContents = async (req, res) => {
   try {
-    const contents = await Content.find()
+    const { search = '' } = req.query
+    const query = {}
+    
+    if (Boolean(search) && search.trim() !== '') {
+      query.$or = [
+        {title: {$regex: search, $options: 'i'}},
+        {topic: {$regex: search, $options: 'i'}}
+      ]
+    }
+
+    console.log(query);
+
+    const contents = await Content.find(query)
     res.json(contents);
   } catch (error) {
     console.error(error.message);
