@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/content_management', {
+    await mongoose.connect(process.env.LOCAL_DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
