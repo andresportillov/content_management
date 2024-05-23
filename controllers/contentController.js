@@ -36,9 +36,6 @@ const getContents = async (req, res) => {
         {topic: {$regex: search, $options: 'i'}}
       ]
     }
-
-    console.log(query);
-
     const contents = await Content.find(query)
     res.json(contents);
   } catch (error) {
