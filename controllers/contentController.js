@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 // Crear un nuevo contenido
 const createContent = async (req, res) => {
-  const { title, type, url, text, category, topic } = req.body;
+  const { title, type, url, category, topic } = req.body;
   const user = await User.findOne({ _id: req.user.id });
 
   try {
@@ -11,14 +11,26 @@ const createContent = async (req, res) => {
       title,
       type,
       url,
-      text,
       category,
       topic,
       createdBy: user.username,
     });
 
+    // Verifica si hay un archivo de texto adjunto
+    if (req.file && req.file.buffer) {
+      // Guarda los datos del archivo de texto en el campo textContent como un Buffer
+      content.textContent = req.file.buffer.toString("base64");
+    }
+
     await content.save();
-    res.json(content);
+
+    // Convierte el buffer a Base64 antes de enviar la respuesta
+    const contentResponse = content.toObject();
+    if (contentResponse.textContent) {
+      contentResponse.textContent = content.textContent.toString("base64");
+    }
+
+    res.json(contentResponse);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");

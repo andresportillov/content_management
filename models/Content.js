@@ -7,7 +7,7 @@ const contentSchema = new mongoose.Schema(
     title: { type: String, required: true },
     type: { type: String, enum: ["image", "video", "text"], required: true },
     url: { type: String }, // URL for videos or images
-    text: { type: String }, // Text content
+    textContent: { type: Buffer },
     category: {
       type: String,
       ref: "categories",
