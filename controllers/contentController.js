@@ -94,7 +94,6 @@ const getCountContentsByCategory = async (req, res) => {
       },
     ]);
 
-    console.log(results);
     res.json(results);
   } catch (error) {
     console.error(error.message);
