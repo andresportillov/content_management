@@ -1,7 +1,6 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // Registro de usuarios
 const register = async (req, res) => {
@@ -10,11 +9,13 @@ const register = async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ msg: 'El correo ya está registrado' });
+      return res.status(400).json({ msg: "El correo ya está registrado" });
     }
 
     if (Boolean(role) && role.trim() === "") {
-      return res.status(400).json({ msg: 'No se puede crear cuentas admin desde este medio.' });
+      return res
+        .status(400)
+        .json({ msg: "No se puede crear cuentas admin desde este medio." });
     }
 
     user = new User({
@@ -26,7 +27,7 @@ const register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
-    
+
     await user.save();
 
     const payload = {
@@ -47,7 +48,7 @@ const register = async (req, res) => {
     );
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -58,12 +59,12 @@ const login = async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' });
+      return res.status(400).json({ msg: "Credenciales inválidas" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' });
+      return res.status(400).json({ msg: "Credenciales inválidas" });
     }
 
     const payload = {
@@ -84,23 +85,23 @@ const login = async (req, res) => {
     );
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
 // Obtener información del usuario autenticado
 const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id);
     res.json(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
 module.exports = {
   register,
   login,
-  getUser
-}
+  getUser,
+};

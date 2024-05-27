@@ -46,7 +46,7 @@ async function initializeCategoryCollection() {
     {
       name: "video",
       coverImage:
-        "https://i.pinimg.com/originals/a0/c6/62/a0c662a3b9a0b20e98a4abeb62b29d86.jpg",
+        "https://www.iconpacks.net/icons/1/free-video-icon-818-thumb.png",
     },
     {
       name: "image",
@@ -54,7 +54,7 @@ async function initializeCategoryCollection() {
     },
     {
       name: "text",
-      coverImag: "https://cdn-icons-png.flaticon.com/512/1/1478.png",
+      coverImage: "https://cdn-icons-png.flaticon.com/512/2911/2911230.png",
     },
   ];
 

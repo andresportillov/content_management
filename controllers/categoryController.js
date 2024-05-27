@@ -24,7 +24,7 @@ const createCategory = async (req, res) => {
 const getCategory = async (req, res) => {
   try {
     const { name = "" } = req.query;
-    const query = {};
+    const query = { isRemove: false };
 
     if (Boolean(name) && name.trim() !== "") {
       query.name = { $regex: name, $options: "i" };
@@ -43,7 +43,10 @@ const updateCategory = async (req, res) => {
   const { name, description, coverImage, allowedContentTypes } = req.body;
 
   try {
-    let category = await Category.findById(req.params.id);
+    let category = await Category.findOne({
+      _id: req.params.id,
+      isRemove: false,
+    });
 
     if (!category) {
       return res.status(404).json({ msg: "Categoría no encontrada" });

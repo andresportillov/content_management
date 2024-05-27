@@ -21,7 +21,7 @@ const createTopic = async (req, res) => {
 // Obtener todas las temáticas
 const getTopics = async (req, res) => {
   try {
-    const topics = await Topic.find();
+    const topics = await Topic.find({ isRemove: false });
     res.json(topics);
   } catch (error) {
     console.error(error.message);

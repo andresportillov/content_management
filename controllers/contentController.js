@@ -7,6 +7,10 @@ const createContent = async (req, res) => {
   const user = await User.findOne({ _id: req.user.id });
 
   try {
+    if (req.user.role.includes("lector")) {
+      throw new Error("Only admin and creador can create content");
+    }
+
     let content = new Content({
       title,
       type,
@@ -41,7 +45,7 @@ const createContent = async (req, res) => {
 const getContents = async (req, res) => {
   try {
     const { search = "" } = req.query;
-    const query = {};
+    const query = { isRemove: false };
 
     if (Boolean(search) && search.trim() !== "") {
       query.$or = [
@@ -49,7 +53,7 @@ const getContents = async (req, res) => {
         { topic: { $regex: search, $options: "i" } },
       ];
     }
-    const contents = await Content.find(query);
+    const contents = await Content.find(query).sort({ createdAt: -1 });
     res.json(contents);
   } catch (error) {
     console.error(error.message);
@@ -60,14 +64,37 @@ const getContents = async (req, res) => {
 const getCountContentsByCategory = async (req, res) => {
   try {
     const results = await Content.aggregate([
+      { $match: { isRemove: false } },
       {
         $group: {
           _id: "$category",
           total: { $sum: 1 },
         },
       },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "name",
+          as: "categories",
+        },
+      },
+      {
+        $unwind: {
+          path: "$categories",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          total: 1,
+          icon: "$categories.coverImage",
+        },
+      },
     ]);
 
+    console.log(results);
     res.json(results);
   } catch (error) {
     console.error(error.message);
@@ -80,7 +107,10 @@ const updateContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
 
   try {
-    let content = await Content.findById(req.params.id);
+    let content = await Content.findOne({
+      _id: req.params.id,
+      isRemove: false,
+    });
 
     if (!content) {
       return res.status(404).json({ msg: "Contenido no encontrado" });
