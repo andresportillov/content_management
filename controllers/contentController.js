@@ -92,6 +92,7 @@ const getCountContentsByCategory = async (req, res) => {
           icon: "$categories.coverImage",
         },
       },
+      { $sort: { _id: 1 } },
     ]);
 
     res.json(results);
