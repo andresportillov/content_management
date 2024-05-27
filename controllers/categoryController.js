@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+const Category = require("../models/Category");
 
 // Crear una nueva categoría
 const createCategory = async (req, res) => {
@@ -16,18 +16,25 @@ const createCategory = async (req, res) => {
     res.json(category);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
 // Obtener todas las categorías
-const getCategories = async (req, res) => {
+const getCategory = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const { name = "" } = req.query;
+    const query = {};
+
+    if (Boolean(name) && name.trim() !== "") {
+      query.name = { $regex: name, $options: "i" };
+    }
+
+    const categories = await Category.findOne(query);
     res.json(categories);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -39,19 +46,20 @@ const updateCategory = async (req, res) => {
     let category = await Category.findById(req.params.id);
 
     if (!category) {
-      return res.status(404).json({ msg: 'Categoría no encontrada' });
+      return res.status(404).json({ msg: "Categoría no encontrada" });
     }
 
     category.name = name || category.name;
     category.description = description || category.description;
     category.coverImage = coverImage || category.coverImage;
-    category.allowedContentTypes = allowedContentTypes || category.allowedContentTypes;
+    category.allowedContentTypes =
+      allowedContentTypes || category.allowedContentTypes;
 
     await category.save();
     res.json(category);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -61,20 +69,20 @@ const deleteCategory = async (req, res) => {
     let category = await Category.findById(req.params.id);
 
     if (!category) {
-      return res.status(404).json({ msg: 'Categoría no encontrada' });
+      return res.status(404).json({ msg: "Categoría no encontrada" });
     }
 
     await category.remove();
-    res.json({ msg: 'Categoría eliminada' });
+    res.json({ msg: "Categoría eliminada" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
 module.exports = {
   createCategory,
-  getCategories,
+  getCategory,
   updateCategory,
-  deleteCategory
-}
+  deleteCategory,
+};

@@ -1,10 +1,11 @@
-const Content = require('../models/Content');
-const User = require('../models/User')
+const Content = require("../models/Content");
+const User = require("../models/User");
 
 // Crear un nuevo contenido
 const createContent = async (req, res) => {
   const { title, type, url, text, category, topic } = req.body;
-  const user = await User.findOne({_id: req.user.id})
+  const user = await User.findOne({ _id: req.user.id });
+
   try {
     let content = new Content({
       title,
@@ -13,34 +14,52 @@ const createContent = async (req, res) => {
       text,
       category,
       topic,
-      createdBy: user.username
+      createdBy: user.username,
     });
 
     await content.save();
     res.json(content);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
 // Obtener todos los contenidos
 const getContents = async (req, res) => {
   try {
-    const { search = '' } = req.query
-    const query = {}
-    
-    if (Boolean(search) && search.trim() !== '') {
+    const { search = "" } = req.query;
+    const query = {};
+
+    if (Boolean(search) && search.trim() !== "") {
       query.$or = [
-        {title: {$regex: search, $options: 'i'}},
-        {topic: {$regex: search, $options: 'i'}}
-      ]
+        { title: { $regex: search, $options: "i" } },
+        { topic: { $regex: search, $options: "i" } },
+      ];
     }
-    const contents = await Content.find(query)
+    const contents = await Content.find(query);
     res.json(contents);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
+  }
+};
+
+const getCountContentsByCategory = async (req, res) => {
+  try {
+    const results = await Content.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json(results);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
   }
 };
 
@@ -52,7 +71,7 @@ const updateContent = async (req, res) => {
     let content = await Content.findById(req.params.id);
 
     if (!content) {
-      return res.status(404).json({ msg: 'Contenido no encontrado' });
+      return res.status(404).json({ msg: "Contenido no encontrado" });
     }
 
     content.title = title || content.title;
@@ -66,7 +85,7 @@ const updateContent = async (req, res) => {
     res.json(content);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -76,14 +95,14 @@ const deleteContent = async (req, res) => {
     let content = await Content.findById(req.params.id);
 
     if (!content) {
-      return res.status(404).json({ msg: 'Contenido no encontrado' });
+      return res.status(404).json({ msg: "Contenido no encontrado" });
     }
 
     await content.remove();
-    res.json({ msg: 'Contenido eliminado' });
+    res.json({ msg: "Contenido eliminado" });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
 
@@ -91,5 +110,6 @@ module.exports = {
   createContent,
   getContents,
   updateContent,
-  deleteContent
-}
+  deleteContent,
+  getCountContentsByCategory,
+};
